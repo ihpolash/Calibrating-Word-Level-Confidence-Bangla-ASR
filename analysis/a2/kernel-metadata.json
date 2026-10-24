@@ -1,0 +1,1 @@
+{"id":"ipolas/bn-calib-analysis2","title":"bn-calib-analysis2","code_file":"analyze2.py","language":"python","kernel_type":"script","is_private":true,"enable_gpu":false,"enable_internet":false,"kernel_sources":["ipolas/bn-calib-feat-whisper-medium","ipolas/bn-calib-feat-whisper-large","ipolas/bn-calib-feat-xlsr","ipolas/bn-calib-feat-cv"]}
