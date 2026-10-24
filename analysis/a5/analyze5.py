@@ -25,9 +25,9 @@ def ece(c, y, bins=15):
 def make(kind, tr_df, tr_h, te_df, te_h):
     y = 1 - tr_df.strict.values
     out = {}
-    g = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0).fit(tr_df[FEATS], y); out["features"] = g.predict_proba(te_df[FEATS])[:, 1]
+    g = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0, early_stopping=False).fit(tr_df[FEATS], y); out["features"] = g.predict_proba(te_df[FEATS])[:, 1]
     pca = PCA(64, random_state=0).fit(tr_h[::3]); Xtr = np.hstack([tr_df[FEATS].values, pca.transform(tr_h)]); Xte = np.hstack([te_df[FEATS].values, pca.transform(te_h)])
-    g2 = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0).fit(Xtr, y); out["features+hidden"] = g2.predict_proba(Xte)[:, 1]
+    g2 = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0, early_stopping=False).fit(Xtr, y); out["features+hidden"] = g2.predict_proba(Xte)[:, 1]
     return out
 rows = []
 for m in ["std", "reg"]:

@@ -45,7 +45,7 @@ def fit_predict(method, tr, te, lab):
     if method == "platt_mean":
         m = LogisticRegression(C=1e6).fit(lg(tr.mean_p.values)[:, None], ytr); return m.predict_proba(lg(te.mean_p.values)[:, None])[:, 1]
     if method == "gbm":
-        m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0).fit(tr[FEATS], ytr)
+        m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0, early_stopping=False).fit(tr[FEATS], ytr)
         return m.predict_proba(te[FEATS])[:, 1]
 METHODS = ["raw_mean", "raw_min", "platt_mean", "gbm"]
 rows, boot = [], []

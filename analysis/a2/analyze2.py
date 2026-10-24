@@ -35,7 +35,7 @@ def fit(method, tr, lab):
     if method == "platt": 
         m = LogisticRegression(C=1e6).fit(lg(tr.mean_p.values)[:, None], y); return lambda te: m.predict_proba(lg(te.mean_p.values)[:, None])[:, 1]
     if method == "gbm":
-        m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0).fit(tr[FEATS], y); return lambda te: m.predict_proba(te[FEATS])[:, 1]
+        m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0, early_stopping=False).fit(tr[FEATS], y); return lambda te: m.predict_proba(te[FEATS])[:, 1]
     if method == "raw": return lambda te: te.mean_p.values
 def prior_shift(p, pi_s, pi_t):   # p = P(correct); pi = P(correct) base rates
     return 1 / (1 + np.exp(-(lg(p) + np.log(pi_t / (1 - pi_t)) - np.log(pi_s / (1 - pi_s)))))

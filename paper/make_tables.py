@@ -65,7 +65,7 @@ def spear(x, y):
 print("\nSpearman(gap, transfer ECE) per model: " + ", ".join(f"{name} {spear([fl(r,'gap') for r in P if r['model']==m and r['label']=='strict'],[fl(r,'ECE_raw') for r in P if r['model']==m and r['label']=='strict']):.2f}" for m, name in MODELS))
 
 U = rd("fewshot_utt.csv")
-print("\n### Table 5. Adapting the Standard-trained GBM to a target dialect: unweighted mean over regions of per-region ECE (strict; Table 3 weights regions by word count, hence 0.336 against 0.320). Platt rows: mean (SD across region-by-repetition runs, 20 repetitions per region). Labelled words are whole utterances held out from the evaluation words.\n")
+print("\n### Table 5. Adapting the Standard-trained GBM to a target dialect: unweighted mean over regions of per-region ECE (strict; Table 3 weights regions by word count, hence 0.327 against 0.310). Platt rows: mean (SD across region-by-repetition runs, 20 repetitions per region). Labelled words are whole utterances held out from the evaluation words.\n")
 print("| Adaptation | " + " | ".join(n for _, n in MODELS) + " |\n|---|" + "---|" * len(MODELS))
 def row(lab, rows, n=None):
     c = []
@@ -99,7 +99,7 @@ for m, name in MODELS:
         r = [r for r in B if r["model"] == m and r["estimator"] == f"resid@20 {k}"][0]
         c.append(f"{fl(r,'ECE'):.3f} [{fl(r,'ECE_lo'):.3f}, {fl(r,'ECE_hi'):.3f}]")
     print(f"| {name} | " + " | ".join(c) + " |")
-print("\n### Table 8. Per-region ECE and AUROC with 95% bootstrap intervals (clips resampled within region, 1000 replicates; regions weighted by word count). The last row is the paired difference, Standard-trained minus other-dialect-trained GBM (ECE) and the reverse (AUROC). Percentile intervals; ECE is biased upward under resampling, so a point estimate can sit near the lower bound.\n")
+print("\n### Table 8. Per-region ECE and AUROC with 95% bootstrap intervals (clips resampled within region, 1000 replicates; regions weighted by word count). The last row is the paired difference, Standard-trained minus other-dialect-trained GBM (ECE) and the reverse (AUROC). Bias-corrected percentile intervals (ECE is biased upward under resampling); they reflect clip resampling with the fitted calibrators held fixed.\n")
 print("| Model | Estimator | ECE [95% CI] | AUROC [95% CI] |\n|---|---|---|---|")
 for m, name in MODELS:
     for k, lab in (("raw mean-p", "raw mean-p"), ("Platt (other dialects)", "Platt, other dialects"), ("GBM (other dialects)", "GBM, other dialects"), ("Std-trained GBM", "GBM, Standard-trained"), ("DIFF Std-trained minus other-dialects GBM", "paired difference")):

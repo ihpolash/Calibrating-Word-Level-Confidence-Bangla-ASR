@@ -10,7 +10,7 @@
 \maketitle
 \begin{abstract}
 
-A transcription pipeline can send its least certain words to a human reviewer, but only if the model's word confidence means what it says. Bangla dialect benchmarks report error rates and nothing about confidence. We measure word-level confidence for four public Bangla recognisers (two Whisper-medium checkpoints, Whisper-large-v3 and an XLS-R CTC model) on 2,668 clips from 12 Bangladeshi regional dialects, and on 2,500 Standard Bangla clips from Common Voice. Raw confidence is overconfident on every model: mean confidence exceeds accuracy by 0.42 to 0.71, and per-region expected calibration error (ECE) is 0.42 to 0.71. A gradient-boosted calibrator over 12 decoding features, trained on the other dialects, brings ECE to between 0.022 and 0.052. A calibrator trained on Standard Bangla ranks dialect errors almost as well (AUROC down 0.017 to 0.020 on three of four models and 0.081 on the fourth) but is miscalibrated on the two Whisper-medium models (ECE 0.33 and 0.21, against 0.052 and 0.049 for a calibrator trained on other dialects). That failure grows with the gap in error rate between training and target speech, and about 100 labelled target words bring the three Whisper models to an ECE between 0.050 and 0.068, whereas estimating the error rate without labels does not help. Even after calibration, at most 0.1\% of dialect words reach a confidence of 0.9, so confidence-based review has limited reach on these models.
+A transcription pipeline can send its least certain words to a human reviewer, but only if the model's word confidence means what it says. Bangla dialect benchmarks report error rates and nothing about confidence. We measure word-level confidence for four public Bangla recognisers (two Whisper-medium checkpoints, Whisper-large-v3 and an XLS-R CTC model) on 2,668 clips from 12 Bangladeshi regional dialects, and on 2,500 Standard Bangla clips from Common Voice. Raw confidence is overconfident on every model: mean confidence exceeds accuracy by 0.42 to 0.71, and per-region expected calibration error (ECE) is 0.42 to 0.71. A gradient-boosted calibrator over 12 decoding features, trained on the other dialects, brings ECE to between 0.023 and 0.051. A calibrator trained on Standard Bangla ranks dialect errors almost as well (AUROC down 0.020 to 0.024 on three of four models and 0.072 on the fourth) but is miscalibrated on the two Whisper-medium models (ECE 0.33 and 0.19, against 0.051 and 0.049 for a calibrator trained on other dialects). That failure grows with the gap in error rate between training and target speech, and about 100 labelled target words bring the three Whisper models to an ECE between 0.048 and 0.070, whereas estimating the error rate without labels does not help. Even after calibration, at most 0.1\% of dialect words reach a confidence of 0.9, so confidence-based review has limited reach on these models.
 
 
 \end{abstract}
@@ -31,11 +31,11 @@ Our findings are these:
 
 \begin{enumerate}
 
-\item Raw word confidence is badly overconfident on all four models (mean confidence exceeds accuracy by 0.42 to 0.71; per-region ECE 0.42 to 0.71), and a calibrator trained on the other dialects reduces it to 0.022 to 0.052 on a held-out dialect.
+\item Raw word confidence is badly overconfident on all four models (mean confidence exceeds accuracy by 0.42 to 0.71; per-region ECE 0.42 to 0.71), and a calibrator trained on the other dialects reduces it to 0.023 to 0.051 on a held-out dialect.
 
 \item A calibrator trained on Standard Bangla keeps most of its ranking ability on dialects but loses calibration on the Whisper-medium models; the loss scales with the error-rate gap between source and target.
 
-\item About 100 labelled target words recalibrate the Whisper models to ECE below 0.07, whereas label-free estimation of the target error rate does not help.
+\item About 100 labelled target words recalibrate the Whisper models to an ECE of 0.048 to 0.070, whereas label-free estimation of the target error rate does not help.
 
 \item Calibrated confidence rarely exceeds 0.9 on dialect speech, which bounds how many words any confidence threshold can accept.
 
@@ -164,19 +164,19 @@ Table 1 shows that every model claims far more accuracy than it has. For the Sta
 Whisper-med (Std) & raw mean-p & +0.590 (+0.35 to +0.72) & 0.547 \\
 Whisper-med (Std) & raw min-p & +0.476 (+0.31 to +0.54) & 0.420 \\
 Whisper-med (Std) & GBM, other dialects & +0.003 ($-$0.14 to +0.07) & 0.168 \\
-Whisper-med (Std) & GBM, Standard-trained & +0.334 (+0.22 to +0.38) & 0.299 \\
+Whisper-med (Std) & GBM, Standard-trained & +0.327 (+0.21 to +0.37) & 0.298 \\
 Whisper-med (Reg) & raw mean-p & +0.415 (+0.22 to +0.51) & 0.380 \\
 Whisper-med (Reg) & raw min-p & +0.205 (+0.08 to +0.26) & 0.246 \\
 Whisper-med (Reg) & GBM, other dialects & +0.003 ($-$0.14 to +0.07) & 0.184 \\
-Whisper-med (Reg) & GBM, Standard-trained & +0.210 (+0.11 to +0.26) & 0.244 \\
+Whisper-med (Reg) & GBM, Standard-trained & +0.186 (+0.08 to +0.24) & 0.235 \\
 Whisper-large-v3 & raw mean-p & +0.707 (+0.59 to +0.77) & 0.620 \\
 Whisper-large-v3 & raw min-p & +0.402 (+0.34 to +0.46) & 0.319 \\
-Whisper-large-v3 & GBM, other dialects & $-$0.000 ($-$0.11 to +0.07) & 0.091 \\
-Whisper-large-v3 & GBM, Standard-trained & +0.046 ($-$0.05 to +0.10) & 0.109 \\
+Whisper-large-v3 & GBM, other dialects & $-$0.000 ($-$0.10 to +0.07) & 0.091 \\
+Whisper-large-v3 & GBM, Standard-trained & +0.052 ($-$0.04 to +0.10) & 0.109 \\
 XLS-R (CTC) & raw mean-p & +0.611 (+0.52 to +0.66) & 0.492 \\
 XLS-R (CTC) & raw min-p & +0.415 (+0.35 to +0.45) & 0.289 \\
-XLS-R (CTC) & GBM, other dialects & $-$0.001 ($-$0.06 to +0.03) & 0.102 \\
-XLS-R (CTC) & GBM, Standard-trained & +0.010 ($-$0.05 to +0.06) & 0.107 \\
+XLS-R (CTC) & GBM, other dialects & $-$0.000 ($-$0.05 to +0.03) & 0.102 \\
+XLS-R (CTC) & GBM, Standard-trained & +0.005 ($-$0.05 to +0.05) & 0.108 \\
 \hline\end{tabular}}
 \end{table}
 
@@ -194,10 +194,10 @@ AUROC of the raw scores is 0.62 to 0.80, with Whisper-large-v3 weakest. Under th
 \begin{tabular}{lcccc}
 \hline
 \textbf{Model} & \textbf{raw mean-p} & \textbf{raw min-p} & \textbf{Platt (mean-p)} & \textbf{GBM (12 features)} \\ \hline
-Whisper-med (Std) & 0.590 / 0.746 & 0.476 / 0.753 & 0.060 / 0.744 & 0.052 / 0.781 \\
+Whisper-med (Std) & 0.590 / 0.746 & 0.476 / 0.753 & 0.060 / 0.744 & 0.051 / 0.782 \\
 Whisper-med (Reg) & 0.415 / 0.716 & 0.206 / 0.720 & 0.071 / 0.716 & 0.049 / 0.767 \\
 Whisper-large-v3 & 0.707 / 0.615 & 0.413 / 0.598 & 0.049 / 0.615 & 0.035 / 0.823 \\
-XLS-R (CTC) & 0.611 / 0.801 & 0.415 / 0.799 & 0.048 / 0.801 & 0.022 / 0.851 \\
+XLS-R (CTC) & 0.611 / 0.801 & 0.415 / 0.799 & 0.048 / 0.801 & 0.023 / 0.851 \\
 \hline\end{tabular}}
 \end{table}
 
@@ -210,15 +210,15 @@ XLS-R (CTC) & 0.611 / 0.801 & 0.415 / 0.799 & 0.048 / 0.801 & 0.022 / 0.851 \\
 \begin{tabular}{lcc}
 \hline
 \textbf{Model} & \textbf{LODO pooled} & \textbf{in-distribution} \\ \hline
-Whisper-med (Std) & 0.006 / 0.793 & 0.004 / 0.799 \\
-Whisper-med (Reg) & 0.005 / 0.778 & 0.004 / 0.782 \\
-Whisper-large-v3 & 0.005 / 0.825 & 0.006 / 0.830 \\
-XLS-R (CTC) & 0.004 / 0.862 & 0.003 / 0.864 \\
+Whisper-med (Std) & 0.007 / 0.793 & 0.006 / 0.799 \\
+Whisper-med (Reg) & 0.005 / 0.779 & 0.005 / 0.783 \\
+Whisper-large-v3 & 0.005 / 0.825 & 0.004 / 0.830 \\
+XLS-R (CTC) & 0.005 / 0.862 & 0.007 / 0.864 \\
 \hline\end{tabular}}
 \end{table}
 
 
-Table 2 shows that the 12-feature GBM trained on the other 11 dialects reaches a per-region ECE of 0.022 to 0.052 and an AUROC of 0.767 to 0.851. Platt scaling alone fixes most of the calibration (0.048 to 0.071) but leaves AUROC at the raw level, so the extra ranking ability comes from the other features. The pooled leave-one-dialect-out result is within 0.006 AUROC of the in-distribution control for every model, and the clip-level bootstrap intervals in Table 8 are narrow (for the Standard checkpoint, ECE 0.052 [0.051, 0.058] and AUROC 0.781 [0.777, 0.786]). The calibrated estimators are close to unbiased on average (pooled signed gap within 0.003 of zero on all four models, Table 9), although the gap ranges from $-$0.14 to +0.07 across regions, and their Brier scores are 0.09 to 0.18 against 0.25 to 0.62 for the raw probabilities. Percentile intervals are one-sided around ECE because ECE is biased upward under resampling. Calibration therefore transfers between these 12 dialects. Table 6 checks whether this depends on the hand-built features.
+Table 2 shows that the 12-feature GBM trained on the other 11 dialects reaches a per-region ECE of 0.023 to 0.051 and an AUROC of 0.767 to 0.851. Platt scaling alone fixes most of the calibration (0.048 to 0.071) but leaves AUROC at the raw level, so the extra ranking ability comes from the other features. The pooled leave-one-dialect-out result is within 0.006 AUROC of the in-distribution control for every model, and the clip-level bootstrap intervals in Table 8 are narrow (for the Standard checkpoint, ECE 0.051 [0.048, 0.055] and AUROC 0.782 [0.778, 0.787]). The calibrated estimators are close to unbiased on average (pooled signed gap within 0.003 of zero on all four models, Table 9), although the gap ranges from $-$0.14 to +0.07 across regions, and their Brier scores are 0.09 to 0.18 against 0.25 to 0.62 for the raw probabilities. The intervals are bias-corrected percentile intervals: ECE is biased upward under resampling, and plain percentile intervals missed the point estimate in one case. Calibration therefore transfers between these 12 dialects. Table 6 checks whether this depends on the hand-built features.
 
 
 \subsection{Standard Bangla to dialects: ranking holds, calibration does not}
@@ -231,45 +231,45 @@ Table 2 shows that the 12-feature GBM trained on the other 11 dialects reaches a
 \begin{tabular}{lccccc}
 \hline
 \textbf{Model} & \textbf{raw mean-p} & \textbf{Platt} & \textbf{GBM} & \textbf{GBM + oracle shift} & \textbf{GBM, dialect-trained} \\ \hline
-Whisper-med (Std) & 0.590 / 0.746 & 0.349 / 0.744 & 0.336 / 0.760 & 0.117 / 0.760 & 0.052 / 0.781 \\
-Whisper-med (Reg) & 0.415 / 0.716 & 0.228 / 0.716 & 0.229 / 0.750 & 0.132 / 0.750 & 0.049 / 0.767 \\
-Whisper-large-v3 & 0.707 / 0.615 & 0.100 / 0.615 & 0.072 / 0.751 & 0.042 / 0.751 & 0.035 / 0.823 \\
-XLS-R (CTC) & 0.611 / 0.801 & 0.103 / 0.801 & 0.032 / 0.836 & 0.112 / 0.836 & 0.022 / 0.851 \\
+Whisper-med (Std) & 0.590 / 0.746 & 0.349 / 0.744 & 0.327 / 0.758 & 0.115 / 0.758 & 0.051 / 0.782 \\
+Whisper-med (Reg) & 0.415 / 0.716 & 0.228 / 0.716 & 0.187 / 0.746 & 0.167 / 0.746 & 0.049 / 0.767 \\
+Whisper-large-v3 & 0.707 / 0.615 & 0.100 / 0.615 & 0.071 / 0.751 & 0.038 / 0.751 & 0.035 / 0.823 \\
+XLS-R (CTC) & 0.611 / 0.801 & 0.103 / 0.801 & 0.035 / 0.831 & 0.112 / 0.831 & 0.023 / 0.851 \\
 \hline\end{tabular}}
 \end{table}
 
 
-Table 3 compares calibrators trained on Standard Bangla with the dialect-trained ones. On the two Whisper-medium models the Standard-trained GBM has per-region ECE of 0.334 and 0.210, against 0.052 and 0.049 when trained on other dialects (paired differences 0.282 and 0.161, Table 8), and it stays overconfident (signed gap +0.33 and +0.21, Table 9). Platt scaling is no better (Table 3). Ranking degrades much less: AUROC falls by 0.020 (Std), 0.019 (Reg) and 0.017 (XLS-R), against 0.081 for Whisper-large-v3 (Table 8, intervals within 0.015 of each point). Two GBM fits on the same data in different runs differ slightly, because early stopping uses an internal random split; this is why Table 3 shows ECE of 0.336 and 0.229 for the two Whisper-medium models and Table 8 shows 0.334 and 0.210, and why the large-v3 AUROC drop is 0.072 in Table 3 and 0.081 in Table 8. We quote Table 8 in the text. The reverse direction fares no better (Table 3b).
+Table 3 compares calibrators trained on Standard Bangla with the dialect-trained ones. On the two Whisper-medium models the Standard-trained GBM has per-region ECE of 0.327 and 0.187, against 0.051 and 0.049 when trained on other dialects (paired differences 0.275 and 0.137, Table 8), and it stays overconfident (signed gap +0.33 and +0.19, Table 9). Platt scaling is no better (Table 3). Ranking degrades much less: AUROC falls by 0.024 (Std), 0.022 (Reg) and 0.020 (XLS-R), against 0.072 for Whisper-large-v3 (Table 8). All GBM fits are deterministic (early stopping is disabled), so Tables 3 and 8 report the same fits. The intervals in Table 8 reflect resampling of evaluation clips with the fitted calibrators held fixed; they do not include uncertainty from fitting the calibrator. The reverse direction fares no better (Table 3b).
 
 
 \begin{table}[htb]
 \centering
-\par\noindent\begin{minipage}{\linewidth}\small Table 8. Per-region ECE and AUROC with 95\% bootstrap intervals (clips resampled within region, 1000 replicates; regions weighted by word count). The last row is the paired difference, Standard-trained minus other-dialect-trained GBM (ECE) and the reverse (AUROC). Percentile intervals; ECE is biased upward under resampling, so a point estimate can sit near the lower bound.\end{minipage}\par\smallskip
+\par\noindent\begin{minipage}{\linewidth}\small Table 8. Per-region ECE and AUROC with 95\% bootstrap intervals (clips resampled within region, 1000 replicates; regions weighted by word count). The last row is the paired difference, Standard-trained minus other-dialect-trained GBM (ECE) and the reverse (AUROC). Bias-corrected percentile intervals (ECE is biased upward under resampling); they reflect clip resampling with the fitted calibrators held fixed.\end{minipage}\par\smallskip
 \small
 \resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
 \begin{tabular}{lccc}
 \hline
 \textbf{Model} & \textbf{Estimator} & \textbf{ECE [95\% CI]} & \textbf{AUROC [95\% CI]} \\ \hline
-Whisper-med (Std) & raw mean-p & 0.590 [0.585, 0.596] & 0.746 [0.741, 0.751] \\
-Whisper-med (Std) & Platt, other dialects & 0.060 [0.058, 0.066] & 0.744 [0.740, 0.749] \\
-Whisper-med (Std) & GBM, other dialects & 0.052 [0.051, 0.058] & 0.781 [0.777, 0.786] \\
-Whisper-med (Std) & GBM, Standard-trained & 0.334 [0.330, 0.339] & 0.762 [0.758, 0.766] \\
-Whisper-med (Std) & paired difference & 0.282 [0.274, 0.286] & 0.020 [0.017, 0.022] \\
-Whisper-med (Reg) & raw mean-p & 0.415 [0.411, 0.420] & 0.716 [0.711, 0.720] \\
-Whisper-med (Reg) & Platt, other dialects & 0.071 [0.069, 0.077] & 0.716 [0.711, 0.720] \\
-Whisper-med (Reg) & GBM, other dialects & 0.049 [0.046, 0.055] & 0.767 [0.763, 0.770] \\
-Whisper-med (Reg) & GBM, Standard-trained & 0.210 [0.206, 0.214] & 0.748 [0.744, 0.752] \\
-Whisper-med (Reg) & paired difference & 0.161 [0.154, 0.165] & 0.019 [0.017, 0.020] \\
-Whisper-large-v3 & raw mean-p & 0.707 [0.700, 0.713] & 0.615 [0.602, 0.626] \\
-Whisper-large-v3 & Platt, other dialects & 0.049 [0.046, 0.056] & 0.615 [0.602, 0.626] \\
-Whisper-large-v3 & GBM, other dialects & 0.035 [0.034, 0.040] & 0.823 [0.815, 0.831] \\
-Whisper-large-v3 & GBM, Standard-trained & 0.067 [0.064, 0.073] & 0.742 [0.731, 0.753] \\
-Whisper-large-v3 & paired difference & 0.032 [0.027, 0.036] & 0.081 [0.073, 0.088] \\
-XLS-R (CTC) & raw mean-p & 0.611 [0.607, 0.616] & 0.801 [0.794, 0.807] \\
-XLS-R (CTC) & Platt, other dialects & 0.048 [0.047, 0.054] & 0.801 [0.794, 0.807] \\
-XLS-R (CTC) & GBM, other dialects & 0.022 [0.023, 0.029] & 0.851 [0.846, 0.856] \\
-XLS-R (CTC) & GBM, Standard-trained & 0.032 [0.032, 0.039] & 0.834 [0.828, 0.839] \\
-XLS-R (CTC) & paired difference & 0.010 [0.007, 0.012] & 0.017 [0.014, 0.020] \\
+Whisper-med (Std) & raw mean-p & 0.590 [0.585, 0.596] & 0.746 [0.742, 0.751] \\
+Whisper-med (Std) & Platt, other dialects & 0.060 [0.056, 0.064] & 0.744 [0.740, 0.749] \\
+Whisper-med (Std) & GBM, other dialects & 0.051 [0.048, 0.055] & 0.782 [0.778, 0.787] \\
+Whisper-med (Std) & GBM, Standard-trained & 0.327 [0.322, 0.331] & 0.758 [0.754, 0.763] \\
+Whisper-med (Std) & paired difference & 0.275 [0.269, 0.281] & 0.024 [0.021, 0.027] \\
+Whisper-med (Reg) & raw mean-p & 0.415 [0.410, 0.420] & 0.716 [0.711, 0.720] \\
+Whisper-med (Reg) & Platt, other dialects & 0.071 [0.067, 0.076] & 0.716 [0.711, 0.720] \\
+Whisper-med (Reg) & GBM, other dialects & 0.049 [0.045, 0.053] & 0.767 [0.764, 0.771] \\
+Whisper-med (Reg) & GBM, Standard-trained & 0.187 [0.183, 0.191] & 0.746 [0.742, 0.750] \\
+Whisper-med (Reg) & paired difference & 0.137 [0.132, 0.142] & 0.022 [0.020, 0.023] \\
+Whisper-large-v3 & raw mean-p & 0.707 [0.700, 0.713] & 0.615 [0.603, 0.626] \\
+Whisper-large-v3 & Platt, other dialects & 0.049 [0.044, 0.054] & 0.615 [0.603, 0.626] \\
+Whisper-large-v3 & GBM, other dialects & 0.035 [0.031, 0.038] & 0.823 [0.815, 0.831] \\
+Whisper-large-v3 & GBM, Standard-trained & 0.071 [0.066, 0.075] & 0.751 [0.741, 0.761] \\
+Whisper-large-v3 & paired difference & 0.036 [0.031, 0.042] & 0.072 [0.065, 0.079] \\
+XLS-R (CTC) & raw mean-p & 0.611 [0.607, 0.616] & 0.801 [0.794, 0.808] \\
+XLS-R (CTC) & Platt, other dialects & 0.048 [0.044, 0.051] & 0.801 [0.794, 0.808] \\
+XLS-R (CTC) & GBM, other dialects & 0.023 [0.020, 0.026] & 0.851 [0.846, 0.856] \\
+XLS-R (CTC) & GBM, Standard-trained & 0.035 [0.032, 0.039] & 0.831 [0.825, 0.836] \\
+XLS-R (CTC) & paired difference & 0.013 [0.010, 0.016] & 0.020 [0.017, 0.023] \\
 \hline\end{tabular}}
 \end{table}
 
@@ -282,15 +282,15 @@ XLS-R (CTC) & paired difference & 0.010 [0.007, 0.012] & 0.017 [0.014, 0.020] \\
 \begin{tabular}{lcc}
 \hline
 \textbf{Model} & \textbf{Platt} & \textbf{GBM} \\ \hline
-Whisper-med (Std) & 0.342 / 0.793 & 0.352 / 0.778 \\
-Whisper-med (Reg) & 0.203 / 0.818 & 0.251 / 0.791 \\
-Whisper-large-v3 & 0.108 / 0.767 & 0.072 / 0.819 \\
-XLS-R (CTC) & 0.087 / 0.801 & 0.142 / 0.800 \\
+Whisper-med (Std) & 0.342 / 0.793 & 0.352 / 0.773 \\
+Whisper-med (Reg) & 0.203 / 0.818 & 0.262 / 0.773 \\
+Whisper-large-v3 & 0.108 / 0.767 & 0.071 / 0.819 \\
+XLS-R (CTC) & 0.087 / 0.801 & 0.159 / 0.782 \\
 \hline\end{tabular}}
 \end{table}
 
 
-XLS-R is the exception to the ECE pattern: its Standard-trained GBM reaches 0.032 with no error-rate correction.
+XLS-R is the exception to the ECE pattern: its Standard-trained GBM reaches 0.035 with no error-rate correction.
 
 
 The error rate may account for much of this. Common Voice error shares are 0.09 and 0.13 for the two Whisper-medium models against 0.68 and 0.62 on dialects, whereas Whisper-large-v3 (0.77 to 0.87) and XLS-R (0.44 to 0.83) have smaller gaps.
@@ -306,42 +306,42 @@ The error rate may account for much of this. Common Voice error shares are 0.09 
 \begin{tabular}{lcc}
 \hline
 \textbf{Gap in accuracy} & \textbf{Source = Common Voice: n, ECE} & \textbf{Source = another dialect: n, ECE} \\ \hline
-(0.0, 0.1] & 5, 0.062 & 300, 0.060 \\
+(0.0, 0.1] & 5, 0.059 & 300, 0.060 \\
 (0.1, 0.2] & 7, 0.085 & 114, 0.088 \\
-(0.2, 0.3] & 3, 0.136 & 76, 0.112 \\
-(0.3, 0.4] & 4, 0.069 & 6, 0.177 \\
-(0.4, 0.6] & 21, 0.179 & 10, 0.199 \\
-(0.6, 1.0] & 7, 0.308 & 0, - \\
+(0.2, 0.3] & 3, 0.125 & 76, 0.111 \\
+(0.3, 0.4] & 4, 0.064 & 6, 0.176 \\
+(0.4, 0.6] & 21, 0.164 & 10, 0.199 \\
+(0.6, 1.0] & 7, 0.281 & 0, - \\
 \hline\end{tabular}}
 \end{table}
 
 
-Across all source and target pairs, transfer ECE rises with the accuracy gap between them. The Spearman correlations are 0.72, 0.85 and 0.68 for the Std, Reg and large-v3 models, and 0.01 for XLS-R; bootstrap intervals over pairs are [0.61, 0.80], [0.79, 0.90], [0.57, 0.75] and [$-$0.18, 0.17], and are optimistic because pairs share clips. This is an association, and we have not tested that the gap causes the loss. At matched gaps the source type does not matter: for gaps up to 0.2, Common Voice sources give ECE of 0.062 and 0.085 and dialect sources give 0.060 and 0.088. Above a gap of 0.6 only Common Voice pairs exist (ECE 0.308, seven pairs), so we cannot separate dialect from read speech there. Correcting only the error rate does not remove the effect. With the true target rate, ECE for Std and Reg is still 0.117 and 0.132, and for XLS-R it rises from 0.032 to 0.112 (Table 3).
+Across all source and target pairs, transfer ECE rises with the accuracy gap between them. The Spearman correlations are 0.71, 0.85 and 0.68 for the Std, Reg and large-v3 models, and 0.02 for XLS-R; bootstrap intervals over pairs are [0.60, 0.80], [0.79, 0.89], [0.57, 0.75] and [$-$0.16, 0.18], and are optimistic because pairs share clips. This is an association, and we have not tested that the gap causes the loss. At matched gaps the source type does not matter: for gaps up to 0.2, Common Voice sources give ECE of 0.059 and 0.085 and dialect sources give 0.060 and 0.088. Above a gap of 0.6 only Common Voice pairs exist (ECE 0.281, seven pairs), so we cannot separate dialect from read speech there. Correcting only the error rate does not remove the effect. With the true target rate, ECE for Std and Reg is still 0.115 and 0.167, and for XLS-R it rises from 0.035 to 0.112 (Table 3).
 
 
 \subsection{A little target labelling fixes most of it}
 
 \begin{table}[htb]
 \centering
-\par\noindent\begin{minipage}{\linewidth}\small Table 5. Adapting the Standard-trained GBM to a target dialect: unweighted mean over regions of per-region ECE (strict; Table 3 weights regions by word count, hence 0.336 against 0.320). Platt rows: mean (SD across region-by-repetition runs, 20 repetitions per region). Labelled words are whole utterances held out from the evaluation words.\end{minipage}\par\smallskip
+\par\noindent\begin{minipage}{\linewidth}\small Table 5. Adapting the Standard-trained GBM to a target dialect: unweighted mean over regions of per-region ECE (strict; Table 3 weights regions by word count, hence 0.327 against 0.310). Platt rows: mean (SD across region-by-repetition runs, 20 repetitions per region). Labelled words are whole utterances held out from the evaluation words.\end{minipage}\par\smallskip
 \small
 \resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{
 \begin{tabular}{lcccc}
 \hline
 \textbf{Adaptation} & \textbf{Whisper-med (Std)} & \textbf{Whisper-med (Reg)} & \textbf{Whisper-large-v3} & \textbf{XLS-R (CTC)} \\ \hline
-none & 0.320 & 0.213 & 0.075 & 0.034 \\
-label-free EM error-rate estimate & 0.294 & 0.336 & 0.085 & 0.153 \\
-true target error rate (oracle) & 0.122 & 0.133 & 0.044 & 0.105 \\
-Platt scaling, 25 labelled words & 0.114 (0.065) & 0.131 (0.073) & 0.097 (0.066) & 0.081 (0.046) \\
-Platt scaling, 50 labelled words & 0.083 (0.041) & 0.092 (0.052) & 0.067 (0.047) & 0.059 (0.032) \\
-Platt scaling, 100 labelled words & 0.061 (0.033) & 0.068 (0.035) & 0.050 (0.034) & 0.043 (0.022) \\
-Platt scaling, 200 labelled words & 0.047 (0.021) & 0.052 (0.023) & 0.037 (0.024) & 0.033 (0.015) \\
-Platt scaling, 400 labelled words & 0.036 (0.014) & 0.040 (0.016) & 0.029 (0.013) & 0.028 (0.010) \\
+none & 0.310 & 0.172 & 0.074 & 0.036 \\
+label-free EM error-rate estimate & 0.282 & 0.379 & 0.084 & 0.153 \\
+true target error rate (oracle) & 0.120 & 0.168 & 0.040 & 0.105 \\
+Platt scaling, 25 labelled words & 0.114 (0.064) & 0.136 (0.079) & 0.099 (0.064) & 0.075 (0.042) \\
+Platt scaling, 50 labelled words & 0.078 (0.040) & 0.091 (0.048) & 0.060 (0.040) & 0.058 (0.033) \\
+Platt scaling, 100 labelled words & 0.063 (0.035) & 0.070 (0.043) & 0.048 (0.030) & 0.042 (0.020) \\
+Platt scaling, 200 labelled words & 0.044 (0.021) & 0.049 (0.024) & 0.037 (0.027) & 0.033 (0.016) \\
+Platt scaling, 400 labelled words & 0.035 (0.016) & 0.037 (0.016) & 0.028 (0.014) & 0.027 (0.011) \\
 \hline\end{tabular}}
 \end{table}
 
 
-Table 5 shows that Platt scaling on 100 labelled words lowers the Standard-trained calibrator's per-region ECE from 0.320 to 0.061 on Std and from 0.213 to 0.068 on Reg, and 400 words reach 0.036 and 0.040. The spread across region-by-repetition runs is large at 100 words (SD 0.033 and 0.035), so the average hides regions where 100 words are not enough. The label-free expectation-maximisation estimate of the target error rate does not help: it moves ECE from 0.213 to 0.336 on Reg and from 0.034 to 0.153 on XLS-R. For XLS-R, Platt scaling on 100 words (0.043) is also worse than leaving the calibrator alone (0.034), so labelled recalibration helps the Whisper models only.
+Table 5 shows that Platt scaling on 100 labelled words lowers the Standard-trained calibrator's per-region ECE from 0.310 to 0.063 on Std and from 0.172 to 0.070 on Reg, and 400 words reach 0.035 and 0.037. The spread across region-by-repetition runs is large at 100 words (SD 0.035 and 0.043), so the average hides regions where 100 words are not enough. The label-free expectation-maximisation estimate of the target error rate does not help: it moves ECE from 0.172 to 0.379 on Reg and from 0.036 to 0.153 on XLS-R. For XLS-R, Platt scaling on 100 words (0.042) is also worse than leaving the calibrator alone (0.036), so labelled recalibration helps the Whisper models only.
 
 
 \subsection{Hidden-state estimator}
@@ -354,20 +354,20 @@ Table 5 shows that Platt scaling on 100 labelled words lowers the Standard-train
 \begin{tabular}{lccc}
 \hline
 \textbf{Model} & \textbf{Training speech} & \textbf{12 features} & \textbf{+ hidden state (PCA 64)} \\ \hline
-Whisper-med (Std) & other dialects & 0.052 / 0.781 & 0.049 / 0.819 \\
-Whisper-med (Std) & Standard Bangla (Common Voice) & 0.336 / 0.760 & 0.338 / 0.755 \\
+Whisper-med (Std) & other dialects & 0.051 / 0.782 & 0.049 / 0.820 \\
+Whisper-med (Std) & Standard Bangla (Common Voice) & 0.327 / 0.758 & 0.317 / 0.752 \\
 Whisper-med (Reg) & other dialects & 0.049 / 0.767 & 0.042 / 0.799 \\
-Whisper-med (Reg) & Standard Bangla (Common Voice) & 0.229 / 0.750 & 0.197 / 0.747 \\
+Whisper-med (Reg) & Standard Bangla (Common Voice) & 0.187 / 0.746 & 0.169 / 0.743 \\
 \hline\end{tabular}}
 \end{table}
 
 
-Table 6 adds the decoder's final-layer hidden state at each word's last token, reduced to 64 principal components fitted on the training words, to the 12 features. This is not the method of Aggarwal et al., who fine-tune the decoder to emit confidence~\cite{Aggarwal2025}; it is a cheaper estimator in the same spirit. On the two Whisper-medium models the hidden state raises leave-one-dialect-out AUROC by 0.038 (Std) and 0.032 (Reg) and leaves ECE at 0.049 and 0.042. It does not help transfer from Standard Bangla: AUROC changes by $-$0.005 and $-$0.003, and ECE stays high at 0.338 and 0.197. The Standard-to-dialect calibration failure therefore does not depend on the hand-built features. The 12-feature rows reproduce Tables 2 and 3 exactly, since decoding is deterministic.
+Table 6 adds the decoder's final-layer hidden state at each word's last token, reduced to 64 principal components fitted on the training words, to the 12 features. This is not the method of Aggarwal et al., who fine-tune the decoder to emit confidence~\cite{Aggarwal2025}; it is a cheaper estimator in the same spirit. On the two Whisper-medium models the hidden state raises leave-one-dialect-out AUROC by 0.038 (Std) and 0.032 (Reg) and leaves ECE at 0.049 and 0.042. It does not help transfer from Standard Bangla: AUROC changes by $-$0.006 and $-$0.003, and ECE stays high at 0.317 and 0.169. The Standard-to-dialect calibration failure therefore does not depend on the hand-built features. The 12-feature rows reproduce Tables 2 and 3 exactly, since the fits are deterministic.
 
 
 \subsection{What review can buy}
 
-Confidence is useful only if enough words can be trusted or checked. With a leave-one-dialect-out GBM, reviewing the 20\% least confident words lowers the hypothesis-word error share of the Standard checkpoint from 0.680 to only 0.611, against 0.620 for the raw minimum-token probability and 0.680 for random review (Table 7). The GBM beats random review on every model, but its margin over the raw minimum-token probability is 0.003 to 0.014.
+Confidence is useful only if enough words can be trusted or checked. With a leave-one-dialect-out GBM, reviewing the 20\% least confident words lowers the hypothesis-word error share of the Standard checkpoint from 0.680 to only 0.611, against 0.620 for the raw minimum-token probability and 0.680 for random review (Table 7). The GBM beats random review on every model, but its margin over the raw minimum-token probability is 0.003 to 0.015.
 
 
 \begin{table}[htb]
@@ -378,26 +378,26 @@ Confidence is useful only if enough words can be trusted or checked. With a leav
 \begin{tabular}{lccc}
 \hline
 \textbf{Model} & \textbf{Random review} & \textbf{Raw minimum-token probability} & \textbf{GBM (other dialects)} \\ \hline
-Whisper-med (Std) & 0.680 [0.674, 0.686] & 0.620 [0.612, 0.627] & 0.611 [0.604, 0.618] \\
-Whisper-med (Reg) & 0.619 [0.613, 0.625] & 0.555 [0.548, 0.562] & 0.541 [0.534, 0.548] \\
-Whisper-large-v3 & 0.875 [0.869, 0.881] & 0.859 [0.853, 0.865] & 0.845 [0.838, 0.852] \\
-XLS-R (CTC) & 0.832 [0.827, 0.838] & 0.794 [0.788, 0.801] & 0.791 [0.784, 0.798] \\
+Whisper-med (Std) & 0.680 [0.674, 0.686] & 0.620 [0.613, 0.627] & 0.611 [0.604, 0.618] \\
+Whisper-med (Reg) & 0.619 [0.613, 0.625] & 0.555 [0.548, 0.561] & 0.541 [0.534, 0.548] \\
+Whisper-large-v3 & 0.875 [0.869, 0.881] & 0.859 [0.853, 0.865] & 0.844 [0.838, 0.851] \\
+XLS-R (CTC) & 0.832 [0.827, 0.838] & 0.794 [0.788, 0.801] & 0.791 [0.785, 0.798] \\
 \hline\end{tabular}}
 \end{table}
 
 
-Accepting words whose calibrated probability of being correct is at least 0.5 covers 24.4\% of its dialect words at 63.3\% precision (base accuracy 32.0\%), and at least 0.7 covers 7.3\% at 74.5\%. At 0.9, coverage is 0.0\% for the Standard checkpoint and 0.1\% for the regional one (91.0\% precision). For Whisper-large-v3, 0.2\% of words reach 0.7 and none reach 0.9; for XLS-R, none reach 0.9.
+Accepting words whose calibrated probability of being correct is at least 0.5 covers 24.6\% of its dialect words at 63.2\% precision (base accuracy 32.0\%), and at least 0.7 covers 7.4\% at 74.6\%. At 0.9, coverage is at most 0.1\% on every model (the regional checkpoint's 0.1\% has 92.0\% precision), and Whisper-large-v3 and XLS-R cover 0.3\% and 1.7\% of words at 0.7.
 
 
 \section{Discussion}
 
-Our results separate two properties that are usually bundled. The ability to say which of two words is more likely wrong survives a change of speech type, with AUROC losses of 0.017 to 0.020 on three models. The ability to say how likely a word is to be wrong does not, and the loss appears to follow the error rate of the speech the calibrator saw. This fits the matched-gap result in Table 4, where the source's type matters less than how far its accuracy sits from the target's.
+Our results separate two properties that are usually bundled. The ability to say which of two words is more likely wrong survives a change of speech type, with AUROC losses of 0.020 to 0.024 on three models. The ability to say how likely a word is to be wrong does not, and the loss appears to follow the error rate of the speech the calibrator saw. This fits the matched-gap result in Table 4, where the source's type matters less than how far its accuracy sits from the target's.
 
 
 The XLS-R model behaves differently. Its transfer ECE is already low without correction, and the error-rate adjustment makes it worse. We do not know why. One possibility is that CTC posteriors, which are sharply peaked, carry error information less tied to the base rate, but we have not tested it.
 
 
-The finding most likely to be overturned is the Standard-to-dialect gap. Common Voice is short read speech and the Whisper checkpoints may have seen it in training, so some of the 0.336 may reflect exposure rather than dialect. A transcribed spontaneous Standard Bangla set would settle it; we found none available.
+The finding most likely to be overturned is the Standard-to-dialect gap. Common Voice is short read speech and the Whisper checkpoints may have seen it in training, so some of the 0.327 may reflect exposure rather than dialect. A transcribed spontaneous Standard Bangla set would settle it; we found none available.
 
 
 The practical message is modest. On these models a deployer should expect raw confidence to be unusable, a dialect-trained calibrator to transfer between dialects, and a Standard-Bangla calibrator to need on the order of a hundred labelled words from the target speech. Beyond that, the low accuracy on dialects caps what any threshold can accept.
@@ -411,7 +411,7 @@ The strongest objection concerns the labels. They depend on a reference written 
 The Standard Bangla source is read speech from one corpus, possibly seen in training, which confounds speech type, speaking style and exposure (Section 6). We did not detect a source-type effect at matched gaps, but we have no dialect pair with a gap above 0.6, so we cannot rule one out there.
 
 
-The regional checkpoint's training data is not documented in the repository we used, and RegSpeech12's training and validation text overlaps Ben-10, so we evaluate on the test split and exclude Rangpur for that checkpoint. Speaker overlap between recalibration and evaluation utterances is unknown, which may make the recalibration results optimistic. Our word-level error share ignores deleted reference words, which conventional WER counts. The GBM fits vary slightly between runs (ECE by up to 0.02 on one model, Section 5.3), so differences smaller than that should not be read as findings. Results cover twelve regions of one corpus and four models, and we trained no confidence head on a fine-tuned Whisper, as Aggarwal et al. did; Section 5.6 uses a hidden-state estimator instead, on the two Whisper-medium models only.
+The regional checkpoint's training data is not documented in the repository we used, and RegSpeech12's training and validation text overlaps Ben-10, so we evaluate on the test split and exclude Rangpur for that checkpoint. Speaker overlap between recalibration and evaluation utterances is unknown, which may make the recalibration results optimistic. Our word-level error share ignores deleted reference words, which conventional WER counts. The reported intervals reflect resampling of evaluation clips only, with each calibrator held fixed. Results cover twelve regions of one corpus and four models, and we trained no confidence head on a fine-tuned Whisper, as Aggarwal et al. did; Section 5.6 uses a hidden-state estimator instead, on the two Whisper-medium models only.
 
 
 \section{Conclusion}

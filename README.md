@@ -56,7 +56,7 @@ Only the Python standard library is needed for these four steps. The analysis sc
 
 ## Known limitations
 
-GBM fits differ slightly between runs (scikit-learn's early stopping uses an internal split that depends on row order), so Tables 3 and 8 of the paper differ by up to 0.02 ECE. Neither corpus has speaker IDs. Reference labels were not manually audited.
+GBM fits are deterministic (early stopping is disabled), so all tables come from one set of fits. Bootstrap intervals resample evaluation clips with the fitted calibrators held fixed and do not include fitting uncertainty. Neither corpus has speaker IDs. Reference labels were not manually audited.
 
 ## Generative AI use
 

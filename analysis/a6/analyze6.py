@@ -25,7 +25,7 @@ def ece(c, y, bins=15):
     return e
 def lg(p): p = np.clip(p, 1e-4, 1 - 1e-4); return np.log(p / (1 - p))
 def gbm(tr): 
-    m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0).fit(tr[FEATS], 1 - tr.strict.values); return lambda te: m.predict_proba(te[FEATS])[:, 1]
+    m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0, early_stopping=False).fit(tr[FEATS], 1 - tr.strict.values); return lambda te: m.predict_proba(te[FEATS])[:, 1]
 def platt(tr):
     m = LogisticRegression(C=1e6).fit(lg(tr.mean_p.values)[:, None], 1 - tr.strict.values); return lambda te: m.predict_proba(lg(te.mean_p.values)[:, None])[:, 1]
 def resid20(conf, err): o = np.argsort(conf); return err[o[int(.2 * len(err)):]].mean()
@@ -70,12 +70,18 @@ for ax, m in zip(axs, ["std", "reg", "large", "xlsr"]):
         diff.append((er["Std-trained GBM"][0] - er["GBM (other dialects)"][0], er["GBM (other dialects)"][1] - er["Std-trained GBM"][1]))
         allx = np.concatenate([idxs[r] for r in regs]); ee = 1 - y[allx]
         rs["GBM (other dialects)"].append(resid20(P["GBM (other dialects)"][allx], ee)); rs["raw min-p"].append(resid20(P["raw min-p"][allx], ee)); rs["random"].append(ee.mean())
-    q = lambda v: (np.percentile(v, 2.5), np.percentile(v, 97.5))
+    def qb(v, f):                                           # bias-corrected percentile interval: ECE is biased upward under resampling
+        bias = np.mean(v) - f; return np.percentile(v, 2.5) - bias, np.percentile(v, 97.5) - bias
     full = {k: (np.average([ece(P[k][base[r]], y[base[r]]) for r in regs], weights=[len(base[r]) for r in regs]), np.average([roc_auc_score(1 - y[base[r]], 1 - P[k][base[r]]) for r in regs], weights=[len(base[r]) for r in regs])) for k in keys}
-    for k in keys: CI.append(dict(model=m, estimator=k, ECE=full[k][0], ECE_lo=q(acc[k]["ECE"])[0], ECE_hi=q(acc[k]["ECE"])[1], AUROC=full[k][1], AUROC_lo=q(acc[k]["AUROC"])[0], AUROC_hi=q(acc[k]["AUROC"])[1]))
-    d = np.array(diff); CI.append(dict(model=m, estimator="DIFF Std-trained minus other-dialects GBM", ECE=full["Std-trained GBM"][0] - full["GBM (other dialects)"][0], ECE_lo=q(d[:, 0])[0], ECE_hi=q(d[:, 0])[1],
-                                       AUROC=full["GBM (other dialects)"][1] - full["Std-trained GBM"][1], AUROC_lo=q(d[:, 1])[0], AUROC_hi=q(d[:, 1])[1]))
-    for k, v in rs.items(): CI.append(dict(model=m, estimator=f"resid@20 {k}", ECE=np.mean(v), ECE_lo=q(v)[0], ECE_hi=q(v)[1]))
+    for k in keys:
+        e, a_ = qb(acc[k]["ECE"], full[k][0]), qb(acc[k]["AUROC"], full[k][1])
+        CI.append(dict(model=m, estimator=k, ECE=full[k][0], ECE_lo=e[0], ECE_hi=e[1], AUROC=full[k][1], AUROC_lo=a_[0], AUROC_hi=a_[1]))
+    d = np.array(diff); fd = (full["Std-trained GBM"][0] - full["GBM (other dialects)"][0], full["GBM (other dialects)"][1] - full["Std-trained GBM"][1])
+    e, a_ = qb(d[:, 0], fd[0]), qb(d[:, 1], fd[1])
+    CI.append(dict(model=m, estimator="DIFF Std-trained minus other-dialects GBM", ECE=fd[0], ECE_lo=e[0], ECE_hi=e[1], AUROC=fd[1], AUROC_lo=a_[0], AUROC_hi=a_[1]))
+    errs = 1 - y; fullres = {"GBM (other dialects)": resid20(P["GBM (other dialects)"], errs), "raw min-p": resid20(P["raw min-p"], errs), "random": errs.mean()}
+    for k, v in rs.items():
+        e = qb(v, fullres[k]); CI.append(dict(model=m, estimator=f"resid@20 {k}", ECE=fullres[k], ECE_lo=e[0], ECE_hi=e[1]))
 plt.tight_layout(); plt.savefig("/kaggle/working/fig_reliability.png", dpi=170)
 pd.DataFrame(S).to_csv("/kaggle/working/metrics_wer.csv", index=False); pd.DataFrame(RV).to_csv("/kaggle/working/signed_brier.csv", index=False); pd.DataFrame(CI).to_csv("/kaggle/working/bootstrap_ci.csv", index=False)
 pd.set_option("display.width", 250); pd.set_option("display.max_columns", 30)

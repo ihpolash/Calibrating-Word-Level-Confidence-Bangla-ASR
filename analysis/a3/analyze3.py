@@ -26,7 +26,7 @@ def lg(p): p = np.clip(p, 1e-4, 1 - 1e-4); return np.log(p / (1 - p))
 def sg(z): return 1 / (1 + np.exp(-z))
 def shift(p, pi_s, pi_t): return sg(lg(p) + lg(np.array(pi_t)) - lg(np.array(pi_s)))
 def gbm(tr, lab): 
-    m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0).fit(tr[FEATS], 1 - tr[lab].values); return lambda te: m.predict_proba(te[FEATS])[:, 1]
+    m = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.08, max_leaf_nodes=15, random_state=0, early_stopping=False).fit(tr[FEATS], 1 - tr[lab].values); return lambda te: m.predict_proba(te[FEATS])[:, 1]
 def platt(tr, lab):
     m = LogisticRegression(C=1e6).fit(lg(tr.mean_p.values)[:, None], 1 - tr[lab].values); return lambda te: m.predict_proba(lg(te.mean_p.values)[:, None])[:, 1]
 def em_prior(p, pi_s, it=100):
